@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ein kleines Date für uns 💕</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+  font-family:Georgia,"Times New Roman",serif;color:#653b50;
+  background:radial-gradient(circle at top,#fff8fc 0,#f8ddea 48%,#edc5dc 100%);
+}
+.petal{position:fixed;opacity:.35;font-size:22px;animation:float 8s linear infinite}
+@keyframes float{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-15vh) rotate(300deg)}}
+.card{
+ width:min(92vw,560px);min-height:540px;padding:42px 30px;
+ background:rgba(255,255,255,.84);border-radius:28px;
+ box-shadow:0 20px 60px rgba(120,50,90,.18);text-align:center;
+ display:flex;align-items:center;justify-content:center;
+}
+.screen{display:none;width:100%}.screen.active{display:block}
+h1{font-size:34px;line-height:1.15;margin:0 0 12px}
+.sub{font-size:17px;color:#8c6375;margin:0 0 28px}
+.heart{font-size:72px;margin-bottom:12px}
+.btn{
+ border:0;border-radius:999px;padding:14px 32px;margin:8px;
+ background:#d77eab;color:white;font:17px Georgia,serif;cursor:pointer;
+ box-shadow:0 8px 18px rgba(180,80,130,.2)
+}
+.btn:hover{transform:scale(1.03)}
+.no{background:#b59aa9}
+input,select{
+ width:100%;padding:15px;border:1px solid #e4c5d4;border-radius:14px;
+ background:white;color:#653b50;font-size:16px;margin:7px 0
+}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.choice{
+ border:1px solid #efd2e0;background:#fffafa;border-radius:18px;padding:17px 10px;
+ cursor:pointer;font:inherit;color:#653b50;transition:.2s
+}
+.choice:hover,.choice.selected{transform:translateY(-3px);border:2px solid #cf78a5;background:#fff0f7}
+.emoji{display:block;font-size:38px;margin-bottom:7px}
+.summary{background:#fff1f7;border-radius:16px;padding:15px;margin:18px 0;font-size:17px}
+.small{font-size:13px;color:#997486}
+</style>
+</head>
+<body>
+<div class="petal" style="left:8%">🌸</div><div class="petal" style="left:30%;animation-delay:2s">♡</div>
+<div class="petal" style="left:62%;animation-delay:4s">🌸</div><div class="petal" style="left:88%;animation-delay:1s">♡</div>
+
+<div class="card">
+
+<!-- 1: Erst die Frage -->
+<section class="screen active" id="s1">
+  <div class="heart">🌷</div>
+  <h1>Willst du mit mir auf ein Date gehen?</h1>
+  <p class="sub">Ich hätte da eine kleine Idee für uns… 💕</p>
+  <button class="btn" onclick="next(2)">JA ♡</button>
+  <button class="btn no" id="noBtn" onmouseover="escapeNo()">Nein 🙈</button>
+</section>
+
+<!-- 2: Tag + Uhrzeit -->
+<section class="screen" id="s2">
+  <h1>So… wann bist du frei? 📅</h1>
+  <p class="sub">Such dir einen Tag und eine Uhrzeit aus</p>
+  <input id="date" type="date">
+  <select id="time">
+    <option value="">Uhrzeit auswählen</option>
+    <option>17:00</option><option>17:30</option><option>18:00</option>
+    <option>18:30</option><option>19:00</option><option>19:30</option>
+    <option>20:00</option><option>20:30</option><option>21:00</option>
+  </select>
+  <button class="btn" onclick="next(3)">Weiter ♡</button>
+</section>
+
+<!-- 3: Essen -->
+<section class="screen" id="s3">
+  <h1>Und… worauf fühlst du dich? 🍽️✨</h1>
+  <p class="sub">Was würdest du beim Date am liebsten essen?</p>
+  <div class="grid">
+    <button class="choice" data-food="Pizza 🍕"><span class="emoji">🍕</span>Pizza</button>
+    <button class="choice" data-food="Sushi 🍣"><span class="emoji">🍣</span>Sushi</button>
+    <button class="choice" data-food="Burger 🍔"><span class="emoji">🍔</span>Burger</button>
+    <button class="choice" data-food="Pasta 🍝"><span class="emoji">🍝</span>Pasta</button>
+    <button class="choice" data-food="Tacos 🌮"><span class="emoji">🌮</span>Tacos</button>
+    <button class="choice" data-food="Ramen 🍜"><span class="emoji">🍜</span>Ramen</button>
+  </div>
+  <button class="btn" onclick="finish()">Date planen ♡</button>
+</section>
+
+<!-- 4: Bestätigung -->
+<section class="screen" id="s4">
+  <div class="heart">🥰💕</div>
+  <h1>Perfekt!</h1>
+  <p class="sub">Dann steht unser Date. Ich freue mich auf dich! 🌹</p>
+  <div class="summary" id="summary"></div>
+  <p class="small">Jetzt fehlt nur noch der Ort 😉</p>
+</section>
+
+</div>
+
+<script>
+let food="";
+document.querySelectorAll(".choice").forEach(b=>{
+ b.addEventListener("click",()=>{
+   document.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));
+   b.classList.add("selected"); food=b.dataset.food;
+ });
+});
+function next(n){
+ if(n===3 && (!document.getElementById("date").value || !document.getElementById("time").value)){
+   alert("Such bitte noch einen Tag und eine Uhrzeit aus 💕"); return;
+ }
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById("s"+n).classList.add("active");
+}
+function finish(){
+ if(!food){alert("Such dir noch etwas Leckeres aus 😋");return;}
+ const d=new Date(document.getElementById("date").value+"T00:00:00");
+ const date=d.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+ document.getElementById("summary").innerHTML=
+   "📅 <b>"+date+"</b><br>⏰ <b>"+document.getElementById("time").value+" Uhr</b><br>🍽️ <b>"+food+"</b>";
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById("s4").classList.add("active");
+}
+function escapeNo(){
+ const b=document.getElementById("noBtn");
+ const x=(Math.random()*180)-90, y=(Math.random()*100)-50;
+ b.style.transform=`translate(${x}px,${y}px)`;
+}
+</script>
+</body>
+</html>
